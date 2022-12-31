@@ -1,6 +1,6 @@
 #include <avr/sleep.h>
 
-#define Debug 1
+#define _Debug 1
 #define DebugBaudRate 115200
 #define ReadyWarmupTime 10000
 #define MotionRearmDelay 60000 * 1
@@ -12,8 +12,14 @@
 #define PinLampWarmup 3
 #define PinLampMotion 4
 
-#define UseSleepMode 1
-#define _UseSoftwareMotionRearm 1
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+// rename these to EnableWhatever to enable them.
+// rename these to DisableWhatever to disable them.
+
+#define EnableSleepMode 1
+#define DisableSoftwareMotionRearm 1
 
 /*******************************************************************************
 **** SLEEP NOTES ***************************************************************
@@ -130,7 +136,7 @@ void loop() {
 	if(WasMotionOn == LOW && IsMotionOn == HIGH) {
 
 		#ifdef Debug
-		Serial.println("motion sensor trigger.");
+		Serial.println("motion sensor tripped.");
 		#endif
 
 		// handle if we managed to hit the 50 days of uptime
@@ -141,7 +147,7 @@ void loop() {
 		// handle not retriggering if the toy is likely still on.
 		// multiple button presses put the toy in different modes.
 
-		#ifdef UseSoftwareMotionRearm
+		#ifdef EnableSoftwareMotionRearm
 		if(HasMotionedOnce && ((Now - WhenMotionOn) <= MotionRearmDelay)) {
 
 			#ifdef Debug
@@ -172,7 +178,8 @@ void loop() {
 	if(WasMotionOn == HIGH && IsMotionOn == LOW) {
 
 		#ifdef Debug
-		Serial.println("motion sensor idle");
+		Serial.print("motion sensor idle after ");
+		Serial.println( (((double)(Now - WhenMotionOn) / 1000.0) / 60.0) );
 		#endif
 
 		digitalWrite(PinLampMotion, LOW);
@@ -183,8 +190,8 @@ void loop() {
 
 	// if nothing has happened then go to sleep.
 
-	#ifdef UseSleepMode
-	#ifndef UseSoftwareMotionRearm
+	#ifdef EnableSleepMode
+	#ifndef EnableSoftwareMotionRearm
 	sleepytime();
 	#endif
 	#endif
