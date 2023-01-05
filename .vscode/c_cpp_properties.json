@@ -27,6 +27,7 @@
             "cStandard": "c11",
             "cppStandard": "c++11",
             "defines": [
+                "__AVR_ATmega2560__",
                 "F_CPU=16000000L",
                 "ARDUINO=10812",
                 "ARDUINO_AVR_MEGA2560",
